@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1077546567574",
+    "project_id": "dynmiclist",
+    "storage_bucket": "dynmiclist.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1077546567574:android:c2a7be92516d9ec5503fb7",
+        "android_client_info": {
+          "package_name": "com.example.list_dynamic"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGiu2XSCq-VGeKp-9aJ1JCiQNrDIMZcDg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

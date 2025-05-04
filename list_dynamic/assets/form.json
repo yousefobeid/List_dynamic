@@ -1,0 +1,86 @@
+{
+  "formElements": [
+    {
+      "id": "1",
+      "type": "textField",
+      "label": "First",
+      "hint": "Enter your first name",
+      "required": true,
+      "maxLength": 30
+    },
+
+    {
+      "id": "2",
+      "type": "textField",
+      "label": "Last Name",
+      "hint": "Enter your last name",
+      "required": true,
+      "maxLength": 30
+    },
+    {
+      "id": "3",
+      "type": "textField",
+      "label": "Email",
+      "hint": "Enter your email address",
+      "required": true,
+      "maxLength": 50
+    },
+
+    {
+      "id": "4",
+      "type": "radio",
+      "label": "Gender",
+      "required": true,
+      "choose": [
+        {
+          "label": "Male",
+          "value": "male"
+        },
+        {
+          "label": "Female",
+          "value": "female"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "type": "dropdown",
+      "label": "Religion",
+      "required": true,
+      "choose": [
+        {
+          "label": "Islam",
+          "value": "islam"
+        },
+        {
+          "label": "Christianity",
+          "value": "christianity"
+        },
+        {
+          "label": "Judaism",
+          "value": "judaism"
+        },
+        {
+          "label": "Other",
+          "value": "other"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "type": "date_picker",
+      "label": "Birth Date",
+      "required": true,
+      "hint": "Select your birth date",
+      "minYear": 1900,
+      "maxYear": 2025
+    },
+
+    {
+      "id": "7",
+      "type": "button",
+      "label": "Next",
+      "action": "submitForm"
+    }
+  ]
+}
