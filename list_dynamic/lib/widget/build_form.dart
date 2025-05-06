@@ -15,6 +15,39 @@ Widget buildFormField(
   ValueNotifier<String?> selectedGender, {
   bool isReadOnly = false,
 }) {
+  if (!state.isOptionEnabled &&
+      (element.id == 'phoneNumber' || element.id == 'city')) {
+    return const SizedBox.shrink();
+  }
+  if (element.id == 'toggleOptions') {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 8.0, top: 20),
+            child: Text(
+              'Options',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          SwitchListTile.adaptive(
+            title: const Text('Show additional options'),
+            value: state.isOptionEnabled,
+            onChanged:
+                isReadOnly
+                    ? null
+                    : (value) {
+                      context.read<FormBloc>().add(
+                        ToggleOptionEvent(showOption: value),
+                      );
+                    },
+          ),
+        ],
+      ),
+    );
+  }
   switch (element.type) {
     case 'textField':
       return Padding(
@@ -64,9 +97,7 @@ Widget buildFormField(
                         return RadioListTile<String>(
                           title: Text(option.label),
                           value: option.value,
-                          // groupValue: state.selectedGender,
                           groupValue: selectedValue,
-
                           onChanged:
                               isReadOnly
                                   ? null

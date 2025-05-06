@@ -1,16 +1,15 @@
 {
   "formElements": [
     {
-      "id": "1",
+      "id": "firstName",
       "type": "textField",
       "label": "First",
       "hint": "Enter your first name",
       "required": true,
       "maxLength": 30
     },
-
     {
-      "id": "2",
+      "id": "lastName",
       "type": "textField",
       "label": "Last Name",
       "hint": "Enter your last name",
@@ -18,56 +17,66 @@
       "maxLength": 30
     },
     {
-      "id": "3",
+      "id": "email",
       "type": "textField",
       "label": "Email",
       "hint": "Enter your email address",
       "required": true,
       "maxLength": 50
     },
-
     {
-      "id": "4",
+      "id": "phoneNumber",
+      "type": "textField",
+      "label": "Phone Number",
+      "hint": "Enter your phone number",
+      "required": false,
+      "maxLength": 15,
+      "keyboardType": "phone"
+    },
+    {
+      "id": "city",
+      "type": "dropdown",
+      "label": "City",
+      "required": false,
+      "choose": [
+        { "label": "Amman", "value": "amman" },
+        { "label": "Zarqa", "value": "zarqa" },
+        { "label": "Irbid", "value": "irbid" },
+        { "label": "Aqaba", "value": "aqaba" },
+        { "label": "Balqa", "value": "balqa" },
+        { "label": "Karak", "value": "karak" },
+        { "label": "Maan", "value": "maan" },
+        { "label": "Mafraq", "value": "mafraq" },
+        { "label": "Tafilah", "value": "tafilah" },
+        { "label": "Jerash", "value": "jerash" },
+        { "label": "Ajloun", "value": "ajloun" },
+        { "label": "Madaba", "value": "madaba" }
+      ]
+    },
+    {
+      "id": "gender",
       "type": "radio",
       "label": "Gender",
       "required": true,
       "choose": [
-        {
-          "label": "Male",
-          "value": "male"
-        },
-        {
-          "label": "Female",
-          "value": "female"
-        }
+        { "label": "Male", "value": "male" },
+        { "label": "Female", "value": "female" }
       ]
     },
     {
-      "id": "5",
+      "id": "religion",
       "type": "dropdown",
       "label": "Religion",
       "required": true,
       "choose": [
-        {
-          "label": "Islam",
-          "value": "islam"
-        },
-        {
-          "label": "Christianity",
-          "value": "christianity"
-        },
-        {
-          "label": "Judaism",
-          "value": "judaism"
-        },
-        {
-          "label": "Other",
-          "value": "other"
-        }
+        { "label": "Islam", "value": "islam" },
+        { "label": "Christianity", "value": "christianity" },
+        { "label": "Judaism", "value": "judaism" },
+        { "label": "Other", "value": "other" }
       ]
     },
     {
-      "id": "6",
+      "id": "birthDate",
       "type": "date_picker",
       "label": "Birth Date",
       "required": true,
@@ -75,9 +84,13 @@
       "minYear": 1900,
       "maxYear": 2025
     },
-
     {
-      "id": "7",
+      "id": "toggleOptions",
+      "type": "switch",
+      "label": "Options"
+    },
+    {
+      "id": "button",
       "type": "button",
       "label": "Next",
       "action": "submitForm"

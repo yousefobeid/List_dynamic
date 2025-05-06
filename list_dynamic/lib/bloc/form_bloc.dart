@@ -11,6 +11,7 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
     on<UpdateEvent>(_onUpdateEvent);
     on<UpdateBirthDateEvent>(_onUpdateBirthDate);
     on<ResetFormEvent>(_resetFormEvent);
+    on<ToggleOptionEvent>(_onToggleOptionalFields);
   }
   Future<void> _onLoadFormData(
     LoadFormDataEvent event,
@@ -26,6 +27,7 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
         selectedMonth: null,
         selectedDay: null,
         religion: null,
+        isOptionEnabled: false,
       ),
     );
   }
@@ -79,10 +81,21 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
           selectedYear: null,
           selectedGender: null,
           religion: null,
+          isOptionEnabled: false,
         ),
       );
     } catch (e) {
       print("Error $e");
+    }
+  }
+
+  void _onToggleOptionalFields(
+    ToggleOptionEvent event,
+    Emitter<ForumState> emit,
+  ) {
+    if (state is FormLoaded) {
+      final currentState = state as FormLoaded;
+      emit(currentState.copyWith(isOptionEnabled: event.showOption));
     }
   }
 }

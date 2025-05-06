@@ -43,3 +43,10 @@ class ResetFormEvent extends FormEvent {
   @override
   List<Object?> get props => [];
 }
+
+class ToggleOptionEvent extends FormEvent {
+  final bool showOption;
+  const ToggleOptionEvent({this.showOption = false});
+  @override
+  List<Object?> get props => [showOption];
+}
