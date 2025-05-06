@@ -21,7 +21,7 @@ class FormLoaded extends ForumState {
   final String? religion;
   final String? selectedGender;
   final Map<String, String> fields;
-
+  final bool isOptionEnabled;
   const FormLoaded({
     required this.formElements,
     this.selectedYear,
@@ -30,9 +30,9 @@ class FormLoaded extends ForumState {
     this.religion,
     this.selectedGender,
     required this.fields,
+    this.isOptionEnabled = false,
   });
 
-  // Factory method to create FormLoaded from JSON
   factory FormLoaded.fromJson(Map<String, dynamic> json) {
     return FormLoaded(
       formElements:
@@ -48,6 +48,7 @@ class FormLoaded extends ForumState {
           json['fields'] != null
               ? Map<String, String>.from(json['fields'])
               : {},
+      isOptionEnabled: json['isOptionEnabled'] ?? false,
     );
   }
 
@@ -60,6 +61,7 @@ class FormLoaded extends ForumState {
     String? religion,
     List<FormElementModel>? formElements,
     Map<String, String>? fields,
+    bool? isOptionEnabled,
   }) {
     return FormLoaded(
       formElements: formElements ?? this.formElements,
@@ -69,6 +71,7 @@ class FormLoaded extends ForumState {
       religion: religion ?? this.religion,
       selectedGender: selectedGender ?? this.selectedGender,
       fields: fields ?? this.fields,
+      isOptionEnabled: isOptionEnabled ?? this.isOptionEnabled,
     );
   }
 
@@ -81,5 +84,6 @@ class FormLoaded extends ForumState {
     religion,
     selectedGender,
     fields,
+    isOptionEnabled,
   ];
 }
