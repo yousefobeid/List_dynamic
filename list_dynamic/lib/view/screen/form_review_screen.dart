@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:list_dynamic/bloc/form_bloc.dart';
-import 'package:list_dynamic/bloc/form_event.dart';
-import 'package:list_dynamic/bloc/form_state.dart';
+import 'package:list_dynamic/bloc/form/form_bloc.dart';
+import 'package:list_dynamic/bloc/form/form_event.dart';
+import 'package:list_dynamic/bloc/form/form_state.dart';
 import 'package:list_dynamic/repo/repository_form.dart';
 import 'package:list_dynamic/widget/build_review_form.dart';
 
@@ -19,26 +19,33 @@ class FormReviewPage extends StatelessWidget {
           if (state is FormLoaded) {
             return ListView(
               children: [
-                ...state.formElements.map((element) {
-                  String? value;
+                ...state.formElements
+                    .where((element) {
+                      if (element.type == 'date_picker') {
+                        return state.selectedYear != null &&
+                            state.selectedMonth != null &&
+                            state.selectedDay != null;
+                      }
 
-                  if (element.type == 'date_picker') {
-                    if (state.selectedYear != null &&
-                        state.selectedMonth != null &&
-                        state.selectedDay != null) {
-                      value =
-                          '${state.selectedDay}-${state.selectedMonth}-${state.selectedYear}';
-                    } else {
-                      value = 'Undefined';
-                    }
-                  } else {
-                    value = state.fields[element.id] ?? 'Undefined ';
-                  }
-                  return buildReviewItem(
-                    title: element.label ?? 'Undefined',
-                    value: value,
-                  );
-                }),
+                      final value = state.fields[element.id];
+                      return value != null && value.trim().isNotEmpty;
+                    })
+                    .map((element) {
+                      String value;
+
+                      if (element.type == 'date_picker') {
+                        value =
+                            '${state.selectedDay}-${state.selectedMonth}-${state.selectedYear}';
+                      } else {
+                        value = state.fields[element.id]!;
+                      }
+
+                      return buildReviewItem(
+                        title: element.label!,
+                        value: value,
+                      );
+                    }),
+
                 const SizedBox(height: 10),
 
                 Center(

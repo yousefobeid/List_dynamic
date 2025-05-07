@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:list_dynamic/bloc/form_bloc.dart';
-import 'package:list_dynamic/bloc/form_event.dart';
-import 'package:list_dynamic/bloc/form_state.dart';
+import 'package:list_dynamic/bloc/form/form_bloc.dart';
+import 'package:list_dynamic/bloc/form/form_event.dart';
+import 'package:list_dynamic/bloc/form/form_state.dart';
 import 'package:list_dynamic/model/form_element_model.dart';
 
-ValueNotifier<String?> selectedGender = ValueNotifier(null);
-GlobalKey<FormState> formKey = GlobalKey();
 Widget buildFormField(
   GlobalKey<FormState> formKey,
   FormElementModel element,
   BuildContext context,
-  FormLoaded state,
-  ValueNotifier<String?> selectedGender, {
+  FormLoaded state, {
   bool isReadOnly = false,
 }) {
-  if (!state.isOptionEnabled &&
-      (element.id == 'phoneNumber' || element.id == 'city')) {
+  if (element.isOption == true && !state.isOptionEnabled) {
     return const SizedBox.shrink();
   }
+
   if (element.id == 'toggleOptions') {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -56,7 +53,9 @@ Widget buildFormField(
           readOnly: isReadOnly,
           initialValue: state.fields[element.id],
           validator: (value) {
-            if (!isReadOnly && (value == null || value.isEmpty)) {
+            if (!isReadOnly &&
+                (value == null || value.isEmpty) &&
+                element.isRequired == true) {
               return 'This field is required';
             } else {
               return null;
@@ -88,32 +87,27 @@ Widget buildFormField(
               element.label ?? 'الجنس',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            ValueListenableBuilder<String?>(
-              valueListenable: selectedGender,
-              builder: (context, selectedValue, _) {
-                return Column(
-                  children:
-                      element.choose!.map((option) {
-                        return RadioListTile<String>(
-                          title: Text(option.label),
-                          value: option.value,
-                          groupValue: selectedValue,
-                          onChanged:
-                              isReadOnly
-                                  ? null
-                                  : (value) {
-                                    selectedGender.value = value;
-                                    context.read<FormBloc>().add(
-                                      UpdateEvent(
-                                        id: element.id,
-                                        value: value ?? '',
-                                      ),
-                                    );
-                                  },
-                        );
-                      }).toList(),
-                );
-              },
+            Column(
+              children:
+                  element.choose!.map((option) {
+                    return RadioListTile<String>(
+                      title: Text(option.label),
+                      value: option.value,
+                      groupValue: state.fields[element.id],
+                      onChanged:
+                          isReadOnly
+                              ? null
+                              : (value) {
+                                state.fields[element.id] = value!;
+                                context.read<FormBloc>().add(
+                                  UpdateGenderEvent(
+                                    feildId: element.id,
+                                    selectId: value,
+                                  ),
+                                );
+                              },
+                    );
+                  }).toList(),
             ),
           ],
         ),
@@ -125,7 +119,9 @@ Widget buildFormField(
         child: DropdownButtonFormField<String>(
           value: state.religion,
           validator: (value) {
-            if (!isReadOnly && (value == null || value.isEmpty)) {
+            if (!isReadOnly &&
+                (value == null || value.isEmpty) &&
+                element.isRequired == true) {
               return 'This field is required';
             } else {
               return null;

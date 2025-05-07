@@ -1,11 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:list_dynamic/bloc/form_bloc.dart';
-import 'package:list_dynamic/bloc/form_event.dart';
-import 'package:list_dynamic/repo/repository_form.dart';
-import 'package:list_dynamic/view/screen/form_page.dart';
-import 'package:list_dynamic/view/screen/form_review_page.dart';
+import 'package:list_dynamic/bloc_provider.dart';
+import 'package:list_dynamic/view/screen/form_review_screen.dart';
+import 'package:list_dynamic/view/screen/form_screen.dart';
+import 'package:list_dynamic/view/screen/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,19 +17,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final bloc = FormBloc(FormRepository());
-        bloc.add(LoadFormDataEvent());
-        return bloc;
-      },
+    return MultiBlocProvider(
+      providers: [...AppBlocProvider().allBlocProviders],
+
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: FormPage(),
-        routes: {'/formPageReview': (context) => FormReviewPage()},
+        home: SplashScreen(),
+        routes: {
+          '/formPage': (context) => FormPage(),
+          '/formPageReview': (context) => FormReviewPage(),
+        },
       ),
     );
   }

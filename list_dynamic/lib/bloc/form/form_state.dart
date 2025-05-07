@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../model/form_element_model.dart';
+import '../../model/form_element_model.dart';
 
 abstract class ForumState extends Equatable {
   const ForumState();
@@ -18,19 +18,32 @@ class FormLoaded extends ForumState {
   final String? selectedYear;
   final String? selectedMonth;
   final String? selectedDay;
+
   final String? religion;
+
   final String? selectedGender;
+
   final Map<String, String> fields;
+
+  final List<FormElementModel> requiredFields;
+  final List<FormElementModel> optionalFields;
   final bool isOptionEnabled;
+
   const FormLoaded({
     required this.formElements,
     this.selectedYear,
     this.selectedMonth,
     this.selectedDay,
+
     this.religion,
+
     this.selectedGender,
+
     required this.fields,
     this.isOptionEnabled = false,
+    required this.requiredFields,
+
+    required this.optionalFields,
   });
 
   factory FormLoaded.fromJson(Map<String, dynamic> json) {
@@ -49,19 +62,32 @@ class FormLoaded extends ForumState {
               ? Map<String, String>.from(json['fields'])
               : {},
       isOptionEnabled: json['isOptionEnabled'] ?? false,
+      requiredFields:
+          (json['requiredFields'] as List)
+              .map((element) => FormElementModel.fromJson(element))
+              .toList(),
+      optionalFields:
+          (json['optionalFields'] as List)
+              .map((element) => FormElementModel.fromJson(element))
+              .toList(),
     );
   }
 
   FormLoaded copyWith({
     String? selectedGender,
+
     String? selectedYear,
     String? selectedMonth,
     String? selectedDay,
+
     List<String>? days,
+
     String? religion,
     List<FormElementModel>? formElements,
     Map<String, String>? fields,
     bool? isOptionEnabled,
+    List<FormElementModel>? requiredFields,
+    List<FormElementModel>? optionalFields,
   }) {
     return FormLoaded(
       formElements: formElements ?? this.formElements,
@@ -72,6 +98,8 @@ class FormLoaded extends ForumState {
       selectedGender: selectedGender ?? this.selectedGender,
       fields: fields ?? this.fields,
       isOptionEnabled: isOptionEnabled ?? this.isOptionEnabled,
+      optionalFields: optionalFields ?? this.optionalFields,
+      requiredFields: requiredFields ?? this.requiredFields,
     );
   }
 
@@ -85,5 +113,7 @@ class FormLoaded extends ForumState {
     selectedGender,
     fields,
     isOptionEnabled,
+    requiredFields,
+    optionalFields,
   ];
 }
