@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:list_dynamic/bloc/form_bloc.dart';
-import 'package:list_dynamic/bloc/form_state.dart';
+import 'package:list_dynamic/bloc/form/form_bloc.dart';
+import 'package:list_dynamic/bloc/form/form_state.dart';
 import 'package:list_dynamic/widget/build_form.dart';
 
 class FormPage extends StatelessWidget {
-  const FormPage({super.key});
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  FormPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +28,6 @@ class FormPage extends StatelessWidget {
                     element,
                     context,
                     state,
-                    selectedGender,
                     isReadOnly: false,
                   );
                 },

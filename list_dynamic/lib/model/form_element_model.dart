@@ -5,9 +5,8 @@ class FormElementModel {
   final String? hint;
   final List<Choose>? choose;
   final BirthDateOptions? chooseBirthDate;
-  final bool? required;
-  final int? maxLength;
-  final String? keyboardType;
+  final bool isRequired;
+  final bool isOption;
   FormElementModel({
     required this.id,
     this.type,
@@ -15,9 +14,8 @@ class FormElementModel {
     this.hint,
     this.choose,
     this.chooseBirthDate,
-    this.required,
-    this.maxLength,
-    this.keyboardType,
+    this.isRequired = false,
+    this.isOption = false,
   });
   //create a Dart object from JSON data.
   factory FormElementModel.fromJson(Map<String, dynamic> json) {
@@ -45,9 +43,8 @@ class FormElementModel {
       hint: json['hint'],
       choose: chooseList,
       chooseBirthDate: birthDateOptions,
-      required: json['required'],
-      maxLength: json['maxLength'],
-      keyboardType: json['keyboardType'],
+      isRequired: json['required'] ?? false,
+      isOption: json['option'] ?? false,
     );
   }
 }

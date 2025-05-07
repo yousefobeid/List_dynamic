@@ -50,3 +50,12 @@ class ToggleOptionEvent extends FormEvent {
   @override
   List<Object?> get props => [showOption];
 }
+
+class UpdateGenderEvent extends FormEvent {
+  final String? feildId;
+  final String? selectId;
+
+  const UpdateGenderEvent({required this.feildId, required this.selectId});
+  @override
+  List<Object?> get props => [];
+}
