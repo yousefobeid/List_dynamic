@@ -45,9 +45,7 @@ class FormReviewPage extends StatelessWidget {
                         value: value,
                       );
                     }),
-
                 const SizedBox(height: 10),
-
                 Center(
                   child: ElevatedButton(
                     onPressed: () async {
@@ -62,14 +60,16 @@ class FormReviewPage extends StatelessWidget {
                         formData['birthdate'] = birthdate;
                       }
                       await formRepository.submitFormData(formData);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.amber,
-                          content: Text(
-                            "The process was completed successfully",
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.black,
+                            content: Text(
+                              "The process was completed successfully",
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                       context.read<FormBloc>().add(ResetFormEvent());
                       Navigator.pop(context);
                     },

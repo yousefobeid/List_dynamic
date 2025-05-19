@@ -10,7 +10,17 @@ class FormPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Dynamic Form")),
+      appBar: AppBar(
+        title: const Text("Dynamic Form"),
+        actions: [
+          MaterialButton(
+            child: Text("Print"),
+            onPressed: () {
+              context.read<FormBloc>().printFormData();
+            },
+          ),
+        ],
+      ),
       body: BlocConsumer<FormBloc, ForumState>(
         listener: (context, state) {},
         builder: (context, state) {
@@ -23,6 +33,7 @@ class FormPage extends StatelessWidget {
                 itemCount: state.formElements.length,
                 itemBuilder: (context, index) {
                   final element = state.formElements[index];
+
                   return buildFormField(
                     formKey,
                     element,

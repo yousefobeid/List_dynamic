@@ -15,7 +15,7 @@ class SplashScreen extends StatelessWidget {
         if (state is SplashNavigateToForm) {
           Navigator.of(
             context,
-          ).pushNamedAndRemoveUntil("/formPage", (route) => false);
+          ).pushNamedAndRemoveUntil("/formChoicePag", (route) => false);
         }
       },
       child: Scaffold(
