@@ -15,7 +15,6 @@ Widget buildFormField(
   if (element.isOption == true && !state.isOptionEnabled) {
     return const SizedBox.shrink();
   }
-
   if (element.id == 'toggleOptions') {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -148,7 +147,6 @@ Widget buildFormField(
                   },
         ),
       );
-
     case 'date_picker':
       return Padding(
         padding: const EdgeInsets.all(10),
@@ -156,43 +154,141 @@ Widget buildFormField(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              element.label ?? 'تاريخ الميلاد',
+              element.label ?? 'Brith Date',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed:
-                  isReadOnly
-                      ? null
-                      : () async {
-                        DateTime? selectedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime(2101),
-                        );
-                        if (selectedDate != null) {
-                          context.read<FormBloc>().add(
-                            UpdateBirthDateEvent(
-                              year: selectedDate.year.toString(),
-                              month: selectedDate.month.toString(),
-                              day: selectedDate.day.toString(),
-                            ),
-                          );
-                        }
-                      },
-              child: Text(
-                (state.selectedYear != null &&
-                        state.selectedMonth != null &&
-                        state.selectedDay != null)
-                    ? '${state.selectedDay}-${state.selectedMonth}-${state.selectedYear}'
-                    : element.label ?? 'تاريخ الميلاد',
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    validator: (value) {
+                      if (value == null) {
+                        return "This field is required";
+                      }
+                      return null;
+                    },
+                    value: state.selectedYear,
+                    decoration: const InputDecoration(
+                      labelText: 'Year',
+                      border: OutlineInputBorder(),
+                    ),
+                    items:
+                        context
+                            .read<FormBloc>()
+                            .getYearBasedOnGender(state.selectedGender ?? '')
+                            .map(
+                              (year) => DropdownMenuItem(
+                                value: year,
+                                child: Text(year),
+                              ),
+                            )
+                            .toList(),
+                    onChanged:
+                        isReadOnly
+                            ? null
+                            : (value) {
+                              context.read<FormBloc>().add(
+                                UpdateBirthDateEvent(
+                                  year: value ?? '',
+                                  month: state.selectedMonth ?? '',
+                                  day: state.selectedDay ?? '',
+                                ),
+                              );
+                            },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    validator: (value) {
+                      if (value == null) {
+                        return "This field is required";
+                      }
+                      return null;
+                    },
+                    value:
+                        context.read<FormBloc>().getAvailableMonths().contains(
+                              state.selectedMonth ?? '',
+                            )
+                            ? state.selectedMonth
+                            : null,
+                    decoration: const InputDecoration(
+                      labelText: 'Month',
+                      border: OutlineInputBorder(),
+                    ),
+                    items:
+                        context
+                            .read<FormBloc>()
+                            .getAvailableMonths()
+                            .map(
+                              (month) => DropdownMenuItem(
+                                value: month,
+                                child: Text(month),
+                              ),
+                            )
+                            .toList(),
+                    onChanged:
+                        isReadOnly
+                            ? null
+                            : (value) {
+                              context.read<FormBloc>().add(
+                                UpdateBirthDateEvent(
+                                  month: value ?? '',
+                                  day: state.selectedDay ?? '',
+                                  year: state.selectedYear ?? '',
+                                ),
+                              );
+                            },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    validator: (value) {
+                      if (value == null) {
+                        return "This field is required";
+                      }
+                      return null;
+                    },
+
+                    value:
+                        state.selectedDay != null &&
+                                state.availableDays.contains(state.selectedDay)
+                            ? state.selectedDay
+                            : null,
+                    decoration: const InputDecoration(
+                      labelText: 'Day',
+                      border: OutlineInputBorder(),
+                    ),
+                    items:
+                        state.availableDays
+                            .map(
+                              (day) => DropdownMenuItem(
+                                value: day,
+                                child: Text(day),
+                              ),
+                            )
+                            .toList(),
+                    onChanged:
+                        isReadOnly
+                            ? null
+                            : (value) {
+                              context.read<FormBloc>().add(
+                                UpdateBirthDateEvent(
+                                  day: value ?? '',
+                                  month: state.selectedMonth ?? '',
+                                  year: state.selectedYear ?? '',
+                                ),
+                              );
+                            },
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       );
-
     case 'button':
       return Padding(
         padding: const EdgeInsets.all(8.0),
