@@ -6,6 +6,10 @@ class FormElementModel {
   final List<Choose>? choose;
   final bool isRequired;
   final bool isOption;
+  final String key;
+  final List<String>? dependsOn;
+  final String? expressionKey;
+  final String? action;
   FormElementModel({
     required this.id,
     this.type,
@@ -14,6 +18,10 @@ class FormElementModel {
     this.choose,
     this.isRequired = false,
     this.isOption = false,
+    required this.key,
+    this.action,
+    this.dependsOn,
+    this.expressionKey,
   });
   //create a Dart object from JSON data.
   factory FormElementModel.fromJson(Map<String, dynamic> json) {
@@ -28,12 +36,19 @@ class FormElementModel {
     }
     return FormElementModel(
       id: json['id'] ?? '',
+      key: json['key'] ?? '',
       type: elementType,
-      label: json['label'].toString(),
-      hint: json['hint'].toString(),
+      label: json['label'] ?? '',
+      hint: json['hint'] ?? '',
       choose: chooseList,
       isRequired: json['required'] ?? false,
       isOption: json['option'] ?? false,
+      dependsOn:
+          json['dependsOn'] != null
+              ? List<String>.from(json["dependsOn"])
+              : null,
+      expressionKey: json['expressionKey'],
+      action: json['action'],
     );
   }
 }

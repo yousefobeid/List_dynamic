@@ -41,11 +41,10 @@ class FormChoicePage extends StatelessWidget {
                       label: "View Information",
                       icon: Icons.list,
                       onPressed: () {
+                        context.read<FormChosseBloc>().add(CheckLocalData());
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder:
-                                (_) =>
-                                    PageViewInformation(data: state.localData),
+                            builder: (_) => PageViewInformation(),
                           ),
                         );
                       },
@@ -55,10 +54,7 @@ class FormChoicePage extends StatelessWidget {
                       label: "Move To The Form",
                       icon: Icons.edit_note,
                       onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          "/formPage",
-                          (route) => false,
-                        );
+                        Navigator.of(context).pushNamed("/formPage");
                       },
                     ),
                   ],
@@ -68,10 +64,7 @@ class FormChoicePage extends StatelessWidget {
                       label: "Go To The Form",
                       icon: Icons.edit_note,
                       onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          "/formPage",
-                          (route) => false,
-                        );
+                        Navigator.of(context).pushNamed("/formPage");
                       },
                     ),
                 ],

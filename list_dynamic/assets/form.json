@@ -1,51 +1,52 @@
 {
   "formElements": [
     {
-      "id": "firstName",
+      "id": "1",
+      "key": "firstName",
       "type": "textField",
       "label": "First",
       "hint": "Enter your first name",
       "required": true,
-      "option": false,
-      "maxLength": 30
+      "option": false
     },
     {
-      "id": "lastName",
+      "id": "2",
+      "key": "lastName",
       "type": "textField",
       "label": "Last Name",
       "hint": "Enter your last name",
       "required": true,
-      "option": false,
-      "maxLength": 30
+      "option": false
     },
     {
-      "id": "email",
+      "id": "3",
+      "key": "email",
       "type": "textField",
       "label": "Email",
       "hint": "Enter your email address",
       "required": true,
-      "option": false,
-      "maxLength": 50
+      "option": false
     },
     {
-      "id": "toggleOptions",
+      "id": "4",
+      "key": "enableOptions",
       "type": "switch",
       "label": "Options",
       "required": true,
       "option": false
     },
     {
-      "id": "phoneNumber",
+      "id": "5",
+      "key": "phoneNamber",
       "type": "textField",
       "label": "Phone Number",
       "hint": "Enter your phone number",
       "required": false,
-      "option": true,
-      "maxLength": 15,
-      "keyboardType": "phone"
+      "option": true
     },
     {
-      "id": "city",
+      "id": "6",
+      "key": "city",
       "type": "dropdown",
       "label": "City",
       "required": false,
@@ -65,9 +66,9 @@
         { "label": "Madaba", "value": "madaba" }
       ]
     },
-
     {
-      "id": "gender",
+      "id": "7",
+      "key": "gender",
       "type": "radio",
       "label": "Gender",
       "required": true,
@@ -77,8 +78,10 @@
         { "label": "Female", "value": "female" }
       ]
     },
+
     {
-      "id": "religion",
+      "id": "9",
+      "key": "religion",
       "type": "dropdown",
       "label": "Religion",
       "required": true,
@@ -91,23 +94,32 @@
       ]
     },
     {
-      "id": "birthDate",
+      "id": "10",
+      "key": "birthDate",
       "type": "date_picker",
       "label": "Birth Date",
       "required": true,
       "option": false,
-      "hint": "Select your birth date",
-      "minYear": 1900,
-      "maxYear": 2025
+      "hint": "Select your birth date"
     },
-
     {
-      "id": "button",
+      "id": "11",
+      "key": "nextButton",
       "type": "button",
       "label": "Next",
       "action": "submitForm",
       "required": true,
       "option": false
+    }
+  ],
+  "rule": [
+    {
+      "if": { "gender": "male" },
+      "set": { "birthDate": { "minage": 20 } }
+    },
+    {
+      "if": { "gender": "female" },
+      "set": { "birthDate": { "minage": 18 } }
     }
   ]
 }
