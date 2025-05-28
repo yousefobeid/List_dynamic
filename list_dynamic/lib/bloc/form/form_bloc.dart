@@ -1,20 +1,25 @@
 import 'package:bloc/bloc.dart';
 import 'package:list_dynamic/bloc/form/form_event.dart';
 import 'package:list_dynamic/bloc/form/form_state.dart';
-import 'package:list_dynamic/data/local/database_helper.dart';
+import 'package:list_dynamic/core/service/database_helper.dart';
+import 'package:list_dynamic/model/form_element_model.dart';
+import 'package:list_dynamic/model/form_model.dart';
+import 'package:list_dynamic/model/form_rule_model.dart';
 import 'package:list_dynamic/repo/repository_form.dart';
 
 class FormBloc extends Bloc<FormEvent, ForumState> {
   final FormRepository formRepository;
   final DatabaseHelper database;
-
-  FormBloc(this.formRepository, this.database) : super(FormInitial()) {
+  final FormModel formModel;
+  FormBloc(this.formRepository, this.database, this.formModel)
+    : super(FormInitial()) {
     on<LoadFormDataEvent>(_onLoadFormData);
     on<UpdateEvent>(_onUpdateEvent);
     on<UpdateBirthDateEvent>(_onUpdateBirthDate);
     on<ResetFormEvent>(_resetFormEvent);
     on<ToggleOptionEvent>(_onToggleOptionalFields);
     on<UpdateGenderEvent>(_onUpdateGenderEvent);
+    on<ValidateFormEvent>(_onValidateForm);
   }
   Future<void> _onLoadFormData(
     LoadFormDataEvent event,
@@ -23,13 +28,18 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
     emit(FormLoading());
     final formElements = await formRepository.fetchFormData();
     final requiredFields =
-        formElements.where((element) => element.isRequired == true).toList();
+        formModel.elements
+            .where((element) => element.isRequired == true)
+            .toList();
     final optionalFields =
-        formElements.where((element) => element.isOption == true).toList();
+        formModel.elements
+            .where((element) => element.isOption == true)
+            .toList();
     emit(
       FormLoaded(
         fields: {},
-        formElements: formElements,
+        formElements: [...formElements.elements],
+        rule: formElements.rules,
         selectedYear: null,
         selectedMonth: null,
         selectedDay: null,
@@ -39,9 +49,14 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
         optionalFields: optionalFields,
         availableDays: [],
         availableMonths: [],
-        availableYears: [],
+        availableYears: getInitialYears(),
       ),
     );
+  }
+
+  List<String> getInitialYears() {
+    final currentYear = DateTime.now().year;
+    return List.generate(50, (index) => (currentYear - index).toString());
   }
 
   void _onUpdateEvent(UpdateEvent event, Emitter<ForumState> emit) async {
@@ -49,7 +64,6 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
       final currentState = state as FormLoaded;
       final updatedFields = Map<String, String>.from(currentState.fields);
       updatedFields[event.id] = event.value;
-      // await database.getAllData();
       emit(currentState.copyWith(fields: updatedFields));
     }
   }
@@ -59,8 +73,9 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
     Emitter<ForumState> emit,
   ) {
     if (state is FormLoaded) {
-      final int year = int.tryParse(event.year) ?? DateTime.now().year;
-      final int month = int.tryParse(event.month) ?? 1;
+      final int year =
+          event.year.isNotEmpty ? int.parse(event.year) : DateTime.now().year;
+      final int month = event.month.isNotEmpty ? int.parse(event.month) : 1;
       List<String> generateDays(int year, int month) {
         final lastDay = DateTime(year, month + 1, 0).day;
         return List.generate(lastDay, (i) => (i + 1).toString());
@@ -88,18 +103,6 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
     }
   }
 
-  Map<String, int> minAgeGender = {"male": 20, "female": 18};
-  List<String> getYearBasedOnGender(String selectedGender) {
-    final currentYear = DateTime.now().year;
-    final minAge = minAgeGender[selectedGender.toLowerCase()] ?? 0;
-    return List.generate(50, (index) => (currentYear - index).toString()).where(
-      (year) {
-        final age = currentYear - int.parse(year);
-        return age >= minAge;
-      },
-    ).toList();
-  }
-
   List<String> getAvailableMonths() {
     return List.generate(12, (index) => (index + 1).toString());
   }
@@ -107,15 +110,65 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
   void _onUpdateGenderEvent(UpdateGenderEvent event, Emitter<ForumState> emit) {
     if (state is FormLoaded) {
       final currentState = state as FormLoaded;
+
       final updatedFields = Map<String, String>.from(currentState.fields);
+
       final selectedGender = event.selectId ?? '';
-      updatedFields[event.feildId!] = event.selectId ?? '';
-      final updateYaer = getYearBasedOnGender(selectedGender);
+
+      final foundElement = currentState.formElements.firstWhere(
+        (element) => element.id == event.feildId,
+        orElse:
+            () => FormElementModel(
+              id: event.feildId ?? '',
+              key: event.feildId ?? '',
+            ),
+      );
+      final fieldKey = foundElement.key;
+
+      updatedFields[fieldKey] = selectedGender;
+      final checkTheRule = currentState.rule.firstWhere((rule) {
+        final condition = rule.condition;
+        bool success = true;
+        for (var key in condition.keys) {
+          final expectedValue = condition[key]?.toString().toLowerCase();
+          final actualValue =
+              updatedFields[key]?.toString().toLowerCase() ?? '';
+
+          if (expectedValue != null && expectedValue != actualValue) {
+            success = false;
+            break;
+          }
+        }
+        return success;
+      }, orElse: () => FormRuleModel(condition: {}, action: {}));
+
+      List<String> availableYears = [];
+
+      if (checkTheRule.action.isNotEmpty &&
+          checkTheRule.action['birthDate'] != null &&
+          checkTheRule.action['birthDate']['minage'] != null) {
+        final birthDateAction = checkTheRule.action['birthDate'];
+        final minAge = birthDateAction['minage'];
+        final currentYear = DateTime.now().year;
+
+        availableYears =
+            List.generate(100, (i) => (currentYear - i).toString())
+                .where((year) => (currentYear - int.parse(year)) >= minAge)
+                .toList();
+      } else {
+        availableYears = [];
+      }
+
       emit(
         currentState.copyWith(
           fields: updatedFields,
           selectedGender: selectedGender,
-          yearOptions: updateYaer,
+          availableYears: availableYears,
+          availableMonths: getAvailableMonths(),
+          selectedYear: null,
+          selectedMonth: null,
+          selectedDay: null,
+          availableDays: [],
         ),
       );
     }
@@ -130,7 +183,8 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
       final elements = await formRepository.fetchFormData();
       emit(
         FormLoaded(
-          formElements: elements,
+          formElements: [...elements.elements],
+          rule: elements.rules,
           fields: {},
           selectedDay: null,
           selectedMonth: null,
@@ -163,5 +217,23 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
   Future<void> printFormData() async {
     final allData = await database.getAllData();
     print("All Data: $allData");
+  }
+
+  void _onValidateForm(ValidateFormEvent event, Emitter<ForumState> emit) {
+    if (state is FormLoaded) {
+      final currentState = state as FormLoaded;
+      final errors = <String, String?>{};
+
+      for (final element in currentState.formElements) {
+        final isRequired = element.isRequired ?? false;
+        final value = currentState.fields[element.key];
+
+        if (isRequired && (value == null || value.trim().isEmpty)) {
+          errors[element.key] = '*';
+        }
+      }
+
+      emit(currentState.copyWith(vaildationError: errors));
+    }
   }
 }

@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._internal();
   static Database? _database;
   DatabaseHelper._internal();
   Future<Database> get database async {
-    if (_database != null) return _database!;
+    if (_database != null && _database!.isOpen) return _database!;
     _database = await _initDatabase();
     return _database!;
   }
@@ -39,21 +40,25 @@ class DatabaseHelper {
   Future<int> insertData(Map<String, dynamic> data) async {
     final db = await database;
     const table = 'forms';
-    await db.delete(table);
+
     final existingColumns =
         (await db.rawQuery(
           'PRAGMA table_info($table)',
-        )).map((e) => e['name'] as String).toSet();
-    print('Existing columns: $existingColumns');
+        )).map((e) => e['name']?.toString() ?? '').toSet();
 
-    for (final key in data.keys) {
+    if (!existingColumns.contains('idFirebase')) {
+      await db.execute('ALTER TABLE $table ADD COLUMN idFirebase TEXT');
+    }
+    for (var key in data.keys) {
       if (!existingColumns.contains(key)) {
-        print('Adding column: $key');
-        await db.execute('ALTER TABLE $table ADD COLUMN `$key` TEXT');
+        await db.execute('ALTER TABLE $table ADD COLUMN $key TEXT');
       }
     }
-    data = data.map((key, value) => MapEntry(key, value ?? ''));
+    var uuid = const Uuid();
+    data['idFirebase'] = data['idFirebase'] ?? uuid.v4();
     data['isSynced'] = 0;
+    data = data.map((key, value) => MapEntry(key, value?.toString() ?? ''));
+
     return await db.insert(table, data);
   }
 
@@ -71,22 +76,32 @@ class DatabaseHelper {
     );
 
     for (var row in unsyncedRows) {
-      final Map<String, dynamic> firebaseData =
-          Map.from(row)
+      final Object? docId = row['idFirebase'];
+      final localData =
+          Map<String, dynamic>.from(row)
             ..remove('id')
             ..remove('isSynced');
+
       try {
-        await FirebaseFirestore.instance
+        final docRef = FirebaseFirestore.instance
             .collection('submittedForms')
-            .add(firebaseData);
-        await db.update(
-          'forms',
-          {'isSynced': 1},
-          where: 'id = ?',
-          whereArgs: [row['id']],
-        );
+            .doc(docId as String? ?? Uuid().v4());
+
+        final docSnapshot = await docRef.get();
+        if (!docSnapshot.exists) {
+          await docRef.set(localData);
+          await db.update(
+            'forms',
+            {'isSynced': 1},
+            where: 'id = ?',
+            whereArgs: [row['id']],
+          );
+          print("تمت مزامنة السجل بنجاح");
+        } else {
+          print("السجل موجود بالفعل، تم تجاهله");
+        }
       } catch (e) {
-        print(' فشل مزامنة سجل: ${row['id']}, $e');
+        print('فشل رفع السجل: ${row['id']}, $e');
       }
     }
   }

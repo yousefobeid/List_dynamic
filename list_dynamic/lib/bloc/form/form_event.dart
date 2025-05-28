@@ -57,5 +57,16 @@ class UpdateGenderEvent extends FormEvent {
 
   const UpdateGenderEvent({required this.feildId, required this.selectId});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [feildId ?? '', selectId ?? ''];
 }
+
+class GenderChanged extends FormEvent {
+  final String gender;
+
+  const GenderChanged(this.gender);
+
+  @override
+  List<Object?> get props => [gender];
+}
+
+class ValidateFormEvent extends FormEvent {}

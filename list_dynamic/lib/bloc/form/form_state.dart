@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../model/form_element_model.dart';
+import '../../model/form_rule_model.dart';
 
 abstract class ForumState extends Equatable {
   const ForumState();
@@ -15,6 +16,7 @@ class FormLoading extends ForumState {}
 
 class FormLoaded extends ForumState {
   final List<FormElementModel> formElements;
+  final List<FormRuleModel> rule;
 
   final List<String> availableYears;
   final List<String> availableMonths;
@@ -23,9 +25,8 @@ class FormLoaded extends ForumState {
   final String? selectedYear;
   final String? selectedMonth;
   final String? selectedDay;
-
-  final String? religion;
   final String? selectedGender;
+  final String? religion;
 
   final Map<String, String> fields;
 
@@ -33,107 +34,117 @@ class FormLoaded extends ForumState {
   final List<FormElementModel> optionalFields;
 
   final bool isOptionEnabled;
+  final Map<String, String?>? vaildationError;
   const FormLoaded({
     required this.formElements,
+    required this.rule,
+    required this.availableYears,
+    required this.availableMonths,
+    required this.availableDays,
     this.selectedYear,
     this.selectedMonth,
     this.selectedDay,
-    required this.availableDays,
-    required this.availableMonths,
-    required this.availableYears,
-    this.religion,
-
     this.selectedGender,
-
+    this.religion,
     required this.fields,
     this.isOptionEnabled = false,
     required this.requiredFields,
-
     required this.optionalFields,
+    this.vaildationError,
   });
 
   factory FormLoaded.fromJson(Map<String, dynamic> json) {
     return FormLoaded(
       formElements:
           (json['formElements'] as List)
-              .map((element) => FormElementModel.fromJson(element))
+              .map((e) => FormElementModel.fromJson(e))
               .toList(),
+      rule:
+          (json['rule'] as List<dynamic>? ?? [])
+              .map((e) => FormRuleModel.fromJson(e))
+              .toList(),
+
       selectedYear: json['selectedYear'],
       selectedMonth: json['selectedMonth'],
       selectedDay: json['selectedDay'],
-      religion: json['religion'],
       selectedGender: json['selectedGender'],
+      religion: json['religion'],
+
       fields:
           json['fields'] != null
               ? Map<String, String>.from(json['fields'])
               : {},
+
       isOptionEnabled: json['isOptionEnabled'] ?? false,
+
       requiredFields:
           (json['requiredFields'] as List)
-              .map((element) => FormElementModel.fromJson(element))
+              .map((e) => FormElementModel.fromJson(e))
               .toList(),
+
       optionalFields:
           (json['optionalFields'] as List)
-              .map((element) => FormElementModel.fromJson(element))
+              .map((e) => FormElementModel.fromJson(e))
               .toList(),
-      availableDays: [],
-      availableMonths: [],
       availableYears: [],
+      availableMonths: [],
+      availableDays: [],
+      vaildationError: {},
     );
   }
 
   FormLoaded copyWith({
-    String? selectedGender,
-
+    List<FormElementModel>? formElements,
+    List<FormRuleModel>? rule,
+    List<String>? availableYears,
+    List<String>? availableMonths,
+    List<String>? availableDays,
     String? selectedYear,
     String? selectedMonth,
     String? selectedDay,
-
-    List<String>? days,
-
+    String? selectedGender,
     String? religion,
-    List<FormElementModel>? formElements,
     Map<String, String>? fields,
     bool? isOptionEnabled,
     List<FormElementModel>? requiredFields,
     List<FormElementModel>? optionalFields,
-    List<String>? yearOptions,
-    List<String>? availableDays,
-    List<String>? availableMonths,
-    List<String>? availableYears,
+    Map<String, String?>? vaildationError,
   }) {
     return FormLoaded(
-      availableDays: availableDays ?? this.availableDays,
-      availableMonths: availableMonths ?? this.availableMonths,
-      availableYears: availableYears ?? this.availableYears,
       formElements: formElements ?? this.formElements,
+      rule: rule ?? this.rule,
+      availableYears: availableYears ?? this.availableYears,
+      availableMonths: availableMonths ?? this.availableMonths,
+      availableDays: availableDays ?? this.availableDays,
       selectedYear: selectedYear ?? this.selectedYear,
       selectedMonth: selectedMonth ?? this.selectedMonth,
       selectedDay: selectedDay ?? this.selectedDay,
-
-      religion: religion ?? this.religion,
       selectedGender: selectedGender ?? this.selectedGender,
+      religion: religion ?? this.religion,
       fields: fields ?? this.fields,
       isOptionEnabled: isOptionEnabled ?? this.isOptionEnabled,
-      optionalFields: optionalFields ?? this.optionalFields,
       requiredFields: requiredFields ?? this.requiredFields,
+      optionalFields: optionalFields ?? this.optionalFields,
+      vaildationError: vaildationError ?? this.vaildationError,
     );
   }
 
   @override
   List<Object?> get props => [
     formElements,
+    rule,
+    availableYears,
+    availableMonths,
+    availableDays,
     selectedYear,
     selectedMonth,
     selectedDay,
-    religion,
     selectedGender,
+    religion,
     fields,
     isOptionEnabled,
     requiredFields,
     optionalFields,
-    availableDays,
-    availableMonths,
-    availableYears,
+    vaildationError,
   ];
 }

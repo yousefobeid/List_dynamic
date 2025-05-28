@@ -6,5 +6,12 @@ class FormChoiceLoading extends FormChosseState {}
 
 class FormChoiceLoded extends FormChosseState {
   final List<Map<String, dynamic>> localData;
-  FormChoiceLoded(this.localData);
+  final Set<int> expandedMore;
+  FormChoiceLoded(this.localData, {this.expandedMore = const {}});
+  FormChoiceLoded copyWith({Set<int>? expandedMore}) {
+    return FormChoiceLoded(
+      localData,
+      expandedMore: expandedMore ?? this.expandedMore,
+    );
+  }
 }

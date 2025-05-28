@@ -15,7 +15,7 @@ Widget buildFormField(
   if (element.isOption == true && !state.isOptionEnabled) {
     return const SizedBox.shrink();
   }
-  if (element.id == 'toggleOptions') {
+  if (element.type == 'switch') {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(
@@ -50,7 +50,6 @@ Widget buildFormField(
         padding: const EdgeInsets.all(10),
         child: TextFormField(
           readOnly: isReadOnly,
-          initialValue: state.fields[element.id],
           validator: (value) {
             if (!isReadOnly &&
                 (value == null || value.isEmpty) &&
@@ -70,7 +69,7 @@ Widget buildFormField(
                   ? null
                   : (value) {
                     context.read<FormBloc>().add(
-                      UpdateEvent(id: element.id, value: value),
+                      UpdateEvent(id: element.key, value: value),
                     );
                   },
         ),
@@ -82,31 +81,49 @@ Widget buildFormField(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              element.label ?? 'الجنس',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Row(
+              children: [
+                Text(
+                  element.label ?? 'الجنس',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(width: 15),
+                if ((state.vaildationError?[element.key]) != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      state.vaildationError![element.key] ?? '',
+                      style: const TextStyle(color: Colors.red, fontSize: 20),
+                    ),
+                  ),
+              ],
             ),
+
             Column(
-              children:
-                  element.choose!.map((option) {
-                    return RadioListTile<String>(
-                      title: Text(option.label),
-                      value: option.value,
-                      groupValue: state.fields[element.id],
-                      onChanged:
-                          isReadOnly
-                              ? null
-                              : (value) {
-                                state.fields[element.id] = value!;
-                                context.read<FormBloc>().add(
-                                  UpdateGenderEvent(
-                                    feildId: element.id,
-                                    selectId: value,
-                                  ),
-                                );
-                              },
-                    );
-                  }).toList(),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...element.choose!.map((option) {
+                  return RadioListTile<String>(
+                    title: Text(option.label),
+                    value: option.value,
+                    groupValue: state.fields[element.key],
+                    onChanged:
+                        isReadOnly
+                            ? null
+                            : (value) {
+                              context.read<FormBloc>().add(
+                                UpdateGenderEvent(
+                                  feildId: element.id,
+                                  selectId: value,
+                                ),
+                              );
+                            },
+                  );
+                }),
+              ],
             ),
           ],
         ),
@@ -142,7 +159,7 @@ Widget buildFormField(
                   ? null
                   : (value) {
                     context.read<FormBloc>().add(
-                      UpdateEvent(id: element.id, value: value ?? ''),
+                      UpdateEvent(id: element.key, value: value ?? ''),
                     );
                   },
         ),
@@ -163,20 +180,24 @@ Widget buildFormField(
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     validator: (value) {
-                      if (value == null) {
+                      if (!state.isOptionEnabled && value == null) {
                         return "This field is required";
                       }
                       return null;
                     },
-                    value: state.selectedYear,
+                    value:
+                        state.selectedYear != null &&
+                                state.availableYears.contains(
+                                  state.selectedYear,
+                                )
+                            ? state.selectedYear
+                            : null,
                     decoration: const InputDecoration(
                       labelText: 'Year',
                       border: OutlineInputBorder(),
                     ),
                     items:
-                        context
-                            .read<FormBloc>()
-                            .getYearBasedOnGender(state.selectedGender ?? '')
+                        state.availableYears
                             .map(
                               (year) => DropdownMenuItem(
                                 value: year,
@@ -202,7 +223,7 @@ Widget buildFormField(
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     validator: (value) {
-                      if (value == null) {
+                      if (!state.isOptionEnabled && value == null) {
                         return "This field is required";
                       }
                       return null;
@@ -246,7 +267,7 @@ Widget buildFormField(
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     validator: (value) {
-                      if (value == null) {
+                      if (!state.isOptionEnabled && value == null) {
                         return "This field is required";
                       }
                       return null;
@@ -298,6 +319,8 @@ Widget buildFormField(
               formKey.currentState!.validate();
               if (formKey.currentState!.validate()) {
                 Navigator.of(context).pushNamed('/formPageReview');
+              } else {
+                context.read<FormBloc>().add(ValidateFormEvent());
               }
             }
           },
