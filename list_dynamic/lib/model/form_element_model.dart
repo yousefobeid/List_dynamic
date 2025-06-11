@@ -51,6 +51,22 @@ class FormElementModel {
       action: json['action'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'key': key,
+      'type': type,
+      'label': label,
+      'hint': hint,
+      'choose': choose?.map((e) => e.toJson()).toList(),
+      'required': isRequired,
+      'option': isOption,
+      'dependsOn': dependsOn,
+      'expressionKey': expressionKey,
+      'action': action,
+    };
+  }
 }
 
 class Choose {
@@ -61,5 +77,9 @@ class Choose {
 
   factory Choose.fromJson(Map<String, dynamic> json) {
     return Choose(label: json['label'] ?? '', value: json['value'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'label': label, 'value': value};
   }
 }

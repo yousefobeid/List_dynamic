@@ -94,9 +94,9 @@ class FormBloc extends Bloc<FormEvent, ForumState> {
       }
       emit(
         (state as FormLoaded).copyWith(
-          selectedYear: event.year,
-          selectedMonth: event.month,
-          selectedDay: event.day,
+          selectedYear: event.year.isEmpty ? null : event.year,
+          selectedMonth: event.month.isEmpty ? null : event.month,
+          selectedDay: selectedDay,
           availableDays: updatedDays,
         ),
       );

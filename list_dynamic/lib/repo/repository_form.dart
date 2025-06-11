@@ -13,6 +13,7 @@ class FormRepository {
   final FormModel formModel;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
+  final IInternetCheck _internetCheck = InternetCheck();
   FormRepository({required this.formModel});
   Future<FormModel> fetchFormData() async {
     await Future.delayed(Duration(seconds: 2));
@@ -36,7 +37,7 @@ class FormRepository {
     String collectionName = 'submittedForms',
   }) async {
     await _databaseHelper.insertData(fields);
-    final connected = await InternetCheck.hasInternet();
+    final connected = await _internetCheck.hasInternet();
     if (connected == true) {
       try {
         final idFirebase = fields['idFirebase'] ?? Uuid().v4();

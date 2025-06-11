@@ -1,15 +1,18 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:list_dynamic/core/helpers/internet_chek.dart';
 import 'package:list_dynamic/core/service/database_helper.dart';
 
 class NetWorkService with WidgetsBindingObserver {
-  static final NetWorkService _instance = NetWorkService._internal();
+  final IInternetCheck checker;
 
-  factory NetWorkService() {
-    return _instance;
+  static NetWorkService? _instance;
+
+  factory NetWorkService({IInternetCheck? checker}) {
+    _instance ??= NetWorkService._internal(checker ?? InternetCheck());
+    return _instance!;
   }
 
-  NetWorkService._internal();
+  NetWorkService._internal(this.checker);
 
   void start() {
     WidgetsBinding.instance.addObserver(this);
@@ -22,7 +25,7 @@ class NetWorkService with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
-      final connected = await InternetCheck.hasInternet();
+      final connected = await checker.hasInternet();
       if (connected) {
         await DatabaseHelper.instance.syncUnsentData();
         debugPrint("تمت المزامنة بعد رجوع التطبيق");
