@@ -19,7 +19,7 @@ void main() async {
     await Firebase.initializeApp();
     final netWorkService = NetWorkService();
     netWorkService.start();
-    final connected = await InternetCheck.hasInternet();
+    final connected = await InternetCheck().hasInternet();
     if (connected) {
       await DatabaseHelper.instance.syncUnsentData();
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
+  // final String Key? key;
   final String label;
   IconData? icon;
   void Function()? onPressed;
@@ -24,6 +25,7 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
+      key: key,
       onPressed: onPressed,
       icon: Icon(icon, size: 25),
       label: Text(label, style: const TextStyle(fontSize: 18)),

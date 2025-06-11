@@ -29,6 +29,7 @@ Widget buildFormField(
             ),
           ),
           SwitchListTile.adaptive(
+            key: Key(element.key),
             title: const Text('Show additional options'),
             value: state.isOptionEnabled,
             onChanged:
@@ -49,6 +50,7 @@ Widget buildFormField(
       return Padding(
         padding: const EdgeInsets.all(10),
         child: TextFormField(
+          key: Key(element.key),
           readOnly: isReadOnly,
           validator: (value) {
             if (!isReadOnly &&
@@ -107,6 +109,7 @@ Widget buildFormField(
               children: [
                 ...element.choose!.map((option) {
                   return RadioListTile<String>(
+                    key: Key(element.key + option.value),
                     title: Text(option.label),
                     value: option.value,
                     groupValue: state.fields[element.key],
@@ -133,6 +136,7 @@ Widget buildFormField(
       return Padding(
         padding: const EdgeInsets.all(10),
         child: DropdownButtonFormField<String>(
+          key: Key(element.key),
           value: state.religion,
           validator: (value) {
             if (!isReadOnly &&
@@ -179,6 +183,7 @@ Widget buildFormField(
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    key: Key('${element.key}year'),
                     validator: (value) {
                       if (!state.isOptionEnabled && value == null) {
                         return "This field is required";
@@ -222,6 +227,7 @@ Widget buildFormField(
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    key: Key('${element.key}month'),
                     validator: (value) {
                       if (!state.isOptionEnabled && value == null) {
                         return "This field is required";
@@ -266,6 +272,7 @@ Widget buildFormField(
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    key: Key('${element.key}day'),
                     validator: (value) {
                       if (!state.isOptionEnabled && value == null) {
                         return "This field is required";
@@ -314,6 +321,7 @@ Widget buildFormField(
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
+          key: Key(element.key),
           onPressed: () {
             if (!isReadOnly) {
               formKey.currentState!.validate();
